@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block 'title' %}About{% endblock 'title' %}
+
+{% block 'body' %}
+
+{% if messages %}
+  {% for message in messages %}
+  <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+    <strong>{{ message }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+{% endif %}
+
+<form method="post" action="about" id="myForm">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="name" class="form-label">Name</label>
+    <input type="text" class="form-control" id="name" name="name">
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  </div>
+  <div class="mb-3">
+    <label for="phone" class="form-label">Phone</label>
+    <input type="tel" class="form-control" id="phone" name="phone">
+  </div>
+  <div class="mb-3">
+    <label for="description" class="form-label">Description</label>
+    <textarea type="text" class="form-control" id="description" name="desc"></textarea>
+  </div>
+  <button type="submit" id="btn" class="btn btn-primary">Submit</button>
+</form>
+
+<h1 class="text-success text-decoration-underline mt-4">Data</h1>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">phone</th>
+      <th scope="col">desc</th>
+      <th scope="col">date</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in data %}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{i.name}}</td>
+      <td>{{i.email}}</td>
+      <td>{{i.phone}}</td>
+      <td>{{i.desc}}</td>
+      <td>{{i.date}}</td>
+      <td>
+        <button onClick="edit('{{i.id}}','{{i.name}}', '{{i.email}}','{{i.phone}}','{{i.desc}}')" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          <i class="fas fa-edit cursor-pointer"></i>
+        </button>
+        <button onClick="deleteRecord('{{i.id}}')" type="button" class="btn btn-danger">
+          <i class="fas fa-trash"></i>
+        </button>
+      </td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal"  data-bs-backdrop="static"  tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Record</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="about">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="editname" name="name">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="editemail" name="email" aria-describedby="emailHelp">
+            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="tel" class="form-control" id="editphone" name="phone">
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea type="text" class="form-control" id="editdescription" name="desc"></textarea>
+          </div>
+          <div class="mb-3">
+            <input type="hidden" class="form-control" id="id" name="id">
+          </div>
+          <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-primary text-end">Update</button>
+          </div>
+        </form>
+      </div>
+      {% comment %} <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div> {% endcomment %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function edit (...e){
+    let name = document.getElementById('editname');
+    let email = document.getElementById('editemail');
+    let phone = document.getElementById('editphone');
+    let desc = document.getElementById('editdescription');
+    let id = document.getElementById('id');
+    
+    console.log("edit",e);
+    
+    id.value = e[0]
+    name.value = e[1]
+    email.value = e[2]
+    phone.value = e[3]
+    desc.value = e[4]
+  }
+
+  function deleteRecord (id){
+    window.location.assign("http://127.0.0.1:8000/about?id="+id)
+  }
+  
+  if ( window.history.replaceState ) {
+    window.history.replaceState( null, null, window.location.href );
+  }
+  </script>
+{% endblock 'body' %}
